@@ -3,7 +3,6 @@
 
 # build files
 build/
-CMakeFiles/
 
 # editor config
 .vscode/
