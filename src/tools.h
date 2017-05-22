@@ -29,7 +29,6 @@ public:
   */
   MatrixXd CalculateJacobian(const VectorXd& x_state);
 
-  Eigen::VectorXd ConvertPolar(const Eigen::VectorXd& x_state);
   VectorXd CalculateHofX(const VectorXd& x_state);
   double checkPIValue(double x);
 };

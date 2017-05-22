@@ -89,32 +89,6 @@ MatrixXd Tools::CalculateJacobian(const VectorXd& x_state) {
 	return Hj;
 }
 
-VectorXd Tools::ConvertPolar(const VectorXd& x_state){
-    
-    VectorXd h_x(3);
-    h_x << 0,0,0;
-    float px = x_state(0);
-    float py = x_state(1);
-    float vx = x_state(2);
-    float vy = x_state(3);
-    
-    //pre-compute a set of terms to avoid repeated calculation
-    float c1 = px*px+py*py;
-    float c2 = sqrt(c1);
-    float c3 = atan2(py,px);
-    float c4 = px*vx + py*vy;
-    
-    //check division by zero
-    if(fabs(c1) < 0.0001){
-        std::cout << "ConvertPolar() - Error - Division by Zero" << std::endl;
-        return h_x;
-    }
-    
-    h_x << c2, c3, c4/c1;
-    
-    return h_x;    
-}
-
 VectorXd Tools::CalculateHofX(const VectorXd& x_state) {
 
 	VectorXd h(3);

@@ -42,21 +42,8 @@ void KalmanFilter::UpdateEKF(const VectorXd &z) {
   TODO:
     * update the state by using Extended Kalman Filter equations
   */
-  // Recalculate x object state to rho, theta, rho_dot coordinates
-  // double rho = sqrt(x_(0)*x_(0) + x_(1)*x_(1));
-  // double theta = atan(x_(1) / x_(0));
-  // // double rho_dot = 0.001;
-  // // if (fabs(rho) > 0.001) {
-  //   double rho_dot = (x_(0)*x_(2) + x_(1)*x_(3)) / rho;
-  // // }
-  // VectorXd h = VectorXd(3); // h(x_)
-  // h << rho, theta, rho_dot;
-  // VectorXd y = z - h;
-  // // Calculations are essentially the same to the Update function
-  // commonKFSteps(y);
 
-
-    Tools tools;
+  Tools tools;
   
   VectorXd h = tools.CalculateHofX(x_);   
   VectorXd y = z - h;
