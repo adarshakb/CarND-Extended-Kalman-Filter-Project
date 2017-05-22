@@ -1,4 +1,5 @@
 #include "kalman_filter.h"
+#include "tools.h"
 
 using Eigen::MatrixXd;
 using Eigen::VectorXd;
@@ -22,6 +23,9 @@ void KalmanFilter::Predict() {
   TODO:
     * predict the state
   */
+  x_ = F_ * x_;
+  MatrixXd Ft = F_.transpose();
+  P_ = F_ * P_ * Ft + Q_;
 }
 
 void KalmanFilter::Update(const VectorXd &z) {
@@ -29,6 +33,8 @@ void KalmanFilter::Update(const VectorXd &z) {
   TODO:
     * update the state by using Kalman Filter equations
   */
+  VectorXd y = z - H_ * x_; 
+  commonKFSteps(y);
 }
 
 void KalmanFilter::UpdateEKF(const VectorXd &z) {
@@ -36,4 +42,49 @@ void KalmanFilter::UpdateEKF(const VectorXd &z) {
   TODO:
     * update the state by using Extended Kalman Filter equations
   */
+  // Recalculate x object state to rho, theta, rho_dot coordinates
+  // double rho = sqrt(x_(0)*x_(0) + x_(1)*x_(1));
+  // double theta = atan(x_(1) / x_(0));
+  // // double rho_dot = 0.001;
+  // // if (fabs(rho) > 0.001) {
+  //   double rho_dot = (x_(0)*x_(2) + x_(1)*x_(3)) / rho;
+  // // }
+  // VectorXd h = VectorXd(3); // h(x_)
+  // h << rho, theta, rho_dot;
+  // VectorXd y = z - h;
+  // // Calculations are essentially the same to the Update function
+  // commonKFSteps(y);
+
+
+    Tools tools;
+  
+  VectorXd h = tools.CalculateHofX(x_);   
+  VectorXd y = z - h;
+
+  y[1] = tools.checkPIValue(y[1]);
+
+  H_ = tools.CalculateJacobian(x_);
+  MatrixXd Ht = H_.transpose();
+  MatrixXd S = H_ * P_ * Ht + R_;
+  MatrixXd Si = S.inverse();
+  MatrixXd PHt = P_ * Ht;
+  MatrixXd K = PHt * Si;
+
+  //new estimate
+  x_ = x_ + (K * y);
+  int x_size = x_.size();
+  MatrixXd I = MatrixXd::Identity(x_size, x_size);
+  P_ = (I - K * H_) * P_;
+}
+
+void KalmanFilter::commonKFSteps(const VectorXd &y) {
+  MatrixXd Ht = H_.transpose();
+  MatrixXd S = H_ * P_ * Ht + R_;
+  MatrixXd Si = S.inverse();
+  MatrixXd K =  P_ * Ht * Si;
+  // New state
+  x_ = x_ + (K * y);
+  int x_size = x_.size();
+  MatrixXd I = MatrixXd::Identity(x_size, x_size);
+  P_ = (I - K * H_) * P_;
 }
